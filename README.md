@@ -70,7 +70,7 @@ Swagger disponível em:
 
 ![Foto de Clara Anna, uma pessoa parda de cabelos escuros, curtos e cacheados, usando um óculos de grau, vestindo uma camiseta rosa claro e sorrindo gentilmente pardasda a foto.](src/main/resources/images/cracha_classica.jpg)
 
-Eu sou uma pessoa desenvolvedora back-end, entusiasta de tecnologia e apaixonada pela ideia de usá-la para transformar o mundo ao meu redor.asda asdasdadasdasda
+Eu sou uma pessoa desenvolvedora back-end, entusiasta de tecnologia e apaixonada pela ideia de usá-la para transformar o mundo ao meu redor.
 
 Formada em Análise e Desenvolvimento de Sistemas, estou constantemente buscando aprimorar minhas habilidades e conhecimentos na área de desenvolvimento de software.
 
