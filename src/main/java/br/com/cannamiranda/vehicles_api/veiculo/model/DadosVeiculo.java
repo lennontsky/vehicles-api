@@ -24,4 +24,12 @@ public record DadosVeiculo(
         int kilometragem,
 
         @NotNull
-        TipoVeiculo tipo) { }
+        TipoVeiculo tipo,
+
+        @NotNull
+        Double preco,
+
+        @NotNull
+        Boolean ativo
+
+        ) { }
