@@ -1,0 +1,1 @@
+alter table veiculos add column tipo varchar(20) not null after ano;
