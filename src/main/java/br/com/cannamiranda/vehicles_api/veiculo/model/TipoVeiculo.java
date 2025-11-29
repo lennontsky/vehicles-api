@@ -1,4 +1,4 @@
-package br.com.cannamiranda.vehicles_api.model;
+package br.com.cannamiranda.vehicles_api.veiculo.model;
 
 public enum TipoVeiculo {
     CARRO,
