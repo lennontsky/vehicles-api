@@ -5,6 +5,7 @@ import br.com.cannamiranda.vehicles_api.exceptions.VeiculoInexistente;
 import br.com.cannamiranda.vehicles_api.veiculo.model.DadosVeiculo;
 import br.com.cannamiranda.vehicles_api.veiculo.model.Veiculo;
 import br.com.cannamiranda.vehicles_api.veiculo.repository.VeiculoRepository;
+import br.com.cannamiranda.vehicles_api.veiculo.service.ConversorMoedaService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class VeiculoProcessor {
 
     @Autowired
     VeiculoRepository repository;
+
+    @Autowired
+    ConversorMoedaService conversorMoedaService;
 
     public ResponseEntity<Veiculo> buscarVeiculoPorId(Long id) {
         var veiculoOptional = repository.findById(id);
@@ -70,19 +74,20 @@ public class VeiculoProcessor {
 
     public ResponseEntity<Veiculo> adicionarVeiculo(@Valid DadosVeiculo dadosVeiculo, URI uri) {
 
- //       try{
             var veiculo = repository.findByPlaca(dadosVeiculo.placa());
             if (veiculo != null) {
                 throw new PlacaRepetidaException(dadosVeiculo.placa());
             }
             else {
                 var novoVeiculo = new Veiculo(dadosVeiculo);
+
+                Double valorEmDolar = conversorMoedaService.converterRealParaDolar() * dadosVeiculo.preco();
+                novoVeiculo.setPreco(valorEmDolar);
+
                 repository.save(novoVeiculo);
                 return ResponseEntity.created(uri).body(novoVeiculo);
             }
-//        } //catch (PlacaRepetidaException ex) {
-//            return badRequest().build();
-//        }
+
     }
 
     public ResponseEntity<Object> desativarVeiculo(Long id) {
