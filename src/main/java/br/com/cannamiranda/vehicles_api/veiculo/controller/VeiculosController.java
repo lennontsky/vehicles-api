@@ -28,8 +28,6 @@ public class VeiculosController {
 
     @Autowired
     private VeiculoProcessor processor;
-    @Autowired
-    private VeiculoRepository repository;
 
 //    @GetMapping
 //    @Operation(summary = "Lista todos os veiculos", description = "Retorna json com todos os veículos cadastrados no sistema.")
