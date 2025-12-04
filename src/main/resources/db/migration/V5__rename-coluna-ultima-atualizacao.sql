@@ -1,0 +1,1 @@
+ALTER TABLE veiculos RENAME COLUMN ultimaAtualizacao TO ultima_atualizacao;

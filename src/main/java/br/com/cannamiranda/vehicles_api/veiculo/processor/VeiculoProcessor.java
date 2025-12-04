@@ -52,8 +52,6 @@ public class VeiculoProcessor {
             return ResponseEntity.ok(page);
         }
 
-
-
         else{
             var page = repository.findAll(pageable).map(veiculo -> List.of(veiculo));
             return ResponseEntity.ok(page);
@@ -74,6 +72,7 @@ public class VeiculoProcessor {
 
     public ResponseEntity<Veiculo> adicionarVeiculo(@Valid DadosVeiculo dadosVeiculo, URI uri) {
 
+            //TODO: Issue #8 Essa implementação ficaria melhor em uma camada de serviço, mas por simplicidade está aqui.
             var veiculo = repository.findByPlaca(dadosVeiculo.placa());
             if (veiculo != null) {
                 throw new PlacaRepetidaException(dadosVeiculo.placa());
@@ -97,7 +96,9 @@ public class VeiculoProcessor {
         if(veiculo.isPresent()){
             var veiculoExistente = veiculo.get();
             veiculoExistente.setAtivo(false);
+
             repository.save(veiculoExistente);
+            System.out.println("LOG: Veículo com ID " + id + " desativado.");
 
             return ResponseEntity.noContent().build();
 
@@ -107,38 +108,30 @@ public class VeiculoProcessor {
 
     }
 
-    public ResponseEntity<List<Veiculo>> obterRelatorioVeiculosPorMarca() {
-        var relatorio = repository.findAllByOrderByMarcaAsc();
-        if (relatorio == null) {
-            return ResponseEntity.noContent().build();
+        public ResponseEntity<List<RelatorioMarcas>> obterRelatorioVeiculosPorMarca() {
+
+            List<RelatorioMarcas> relatorio = repository.relatorioDeVeiculosPorMarca();
+
+            if (relatorio == null || relatorio.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(relatorio);
+
         }
-        else {
-            return ResponseEntity.ok().body(relatorio);
-        }
+
+    public ResponseEntity<Veiculo> atualizarVeiculoParcial(@Valid Veiculo veiculo) {
+
+            var veiculoDB = repository.findById(veiculo.getId());
+            if (veiculoDB.isPresent()) {
+                Veiculo veiculoAtualizado = veiculo.atualizarInformacoes(veiculoDB.get());
+                if (veiculoAtualizado != null) {
+                    repository.save(veiculoAtualizado);
+                    return ResponseEntity.ok(veiculoAtualizado);
+                }
+            }
+
+            return ResponseEntity.notFound().build();
     }
-
-//    public ResponseEntity<Page<List<Veiculo>>> buscarVeiculosPorFaixaDePreco(Double precoInicial, Double precoFinal, Pageable pageable) {
-//        var veiculos = repository.findByPrecoBetween(precoInicial, precoFinal, pageable);
-//        if (veiculos == null || veiculos.isEmpty()) {
-//            return ResponseEntity.noContent().build();
-//        } else {
-//            return ResponseEntity.ok().body(veiculos);
-//        }
-//    }
-
-
-//    public ResponseEntity<List<Veiculo>> buscarVeiculos(java.util.Map<String, String> filtros) {
-//        List<Veiculo> veiculos;
-//        if (filtros == null || filtros.isEmpty()) {
-//            veiculos = repository.findAll();
-//        } else {
-//            // Assumindo que o repositório expõe um método que aceita os filtros recebidos
-//            veiculos = repository.findByFilters(filtros);
-//
-//            repository.findAll((Sort) filtros);
-//        }
-//        return ResponseEntity.ok(veiculos);
-//    }
-
 
 }

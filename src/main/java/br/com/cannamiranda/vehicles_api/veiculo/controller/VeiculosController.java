@@ -1,6 +1,7 @@
 package br.com.cannamiranda.vehicles_api.veiculo.controller;
 
 
+import br.com.cannamiranda.vehicles_api.veiculo.processor.RelatorioMarcas;
 import br.com.cannamiranda.vehicles_api.veiculo.processor.VeiculoProcessor;
 import br.com.cannamiranda.vehicles_api.veiculo.model.Veiculo;
 import br.com.cannamiranda.vehicles_api.veiculo.model.DadosVeiculo;
@@ -29,32 +30,26 @@ public class VeiculosController {
     @Autowired
     private VeiculoProcessor processor;
 
-//    @GetMapping
-//    @Operation(summary = "Lista todos os veiculos", description = "Retorna json com todos os veículos cadastrados no sistema.")
-//    public ResponseEntity<Page<List<Veiculo>>> consultaTodosVeiculos(@PageableDefault(size = 10) Pageable pageable,
-//                                                                     @RequestParam(required = false) String valorMinimo,
-//                                                                     @RequestParam(required = false) String valorMaximo,
-//                                                                     @RequestParam(required = false) String cor,
-//                                                                     @RequestParam(required = false) String marca,
-//                                                                     @RequestParam(required = false) String ano) {
-//        return processor.buscarVeiculos(pageable);
-//    }
-
     @GetMapping
-    @Operation(summary = "Lista todos os veiculos", description = "Retorna json com todos os veículos cadastrados no sistema.")
+    @Operation(summary = "Lista todos os veiculos cadastrados no banco de dados", description = "Retorna json com todos os veículos cadastrados no banco de dados, com paginação e filtros opcionais.")
     public ResponseEntity<Page<List<Veiculo>>> consultaTodosVeiculos(@PageableDefault(size = 10) Pageable pageable,
                                                                      @RequestParam(required = false) String valorMinimo,
-                                                                     @RequestParam(required = false) String valorMaximo,
-                                                                     @RequestParam(required = false) String cor,
-                                                                     @RequestParam(required = false) String marca,
-                                                                     @RequestParam(required = false) String ano) {
+                                                                     @RequestParam(required = false) String valorMaximo) {
+                                                                     // Todo: issue #7 Melhorias no sistema de filtros
+                                                                     //@RequestParam(required = false) String cor,
+                                                                     //@RequestParam(required = false) String marca,
+                                                                     //@RequestParam(required = false) String ano) {
 
         Map<String, String> filtros = new java.util.HashMap<>();
         if (valorMinimo != null) filtros.put("valorMinimo", valorMinimo);
         if (valorMaximo != null) filtros.put("valorMaximo", valorMaximo);
-        if (cor != null) filtros.put("cor", cor);
-        if (marca != null) filtros.put("marca", marca);
-        if (ano != null) filtros.put("ano", ano);
+
+        /*
+        Todo: issue #7 Melhorias no sistema de filtros
+            if (cor != null) filtros.put("cor", cor);
+            if (marca != null) filtros.put("marca", marca);
+            if (ano != null) filtros.put("ano", ano);
+        */
 
         System.out.println("LOG: Filtros recebidos - " + filtros.toString());
 
@@ -63,7 +58,7 @@ public class VeiculosController {
 
 
     @GetMapping("/{id}")
-    @Operation(summary = "Detalha um veículo pelo ID", description = "Retorna os detalhes de um veículo específico com base no ID fornecido.")
+    @Operation(summary = "Obtem dados do veiculo a partir do ID.", description = "Retorna os detalhes de um veículo específico com base no ID fornecido.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Veículo encontrado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Veículo não encontrado")
@@ -73,9 +68,9 @@ public class VeiculosController {
     }
 
     @GetMapping("/relatorios/por-marca")
-    @Operation(summary = "Relatório de veículos por marca", description = "Gera um relatório que agrupa os veículos cadastrados por marca.")
-    public ResponseEntity<List<Veiculo>> relatorioVeiculosPorMarca(@PageableDefault(size = 10) Pageable pageable) {
-       return processor.obterRelatorioVeiculosPorMarca();
+    @Operation(summary = "Relatório de veículos por marca", description = "Gera um relatório informando o total de veiculos de cada marca.")
+    public List<RelatorioMarcas> relatorioVeiculosPorMarca() {
+       return processor.obterRelatorioVeiculosPorMarca().getBody();
     }
 
     @PostMapping
@@ -86,19 +81,29 @@ public class VeiculosController {
     })
     public ResponseEntity<Veiculo> adicionarVeiculo(@RequestBody @Valid DadosVeiculo dadosVeiculo, UriComponentsBuilder uriComponentsBuilder) {
         var uri = uriComponentsBuilder.path("/veiculos/{id}").buildAndExpand(dadosVeiculo.placa()).toUri();
+
         return processor.adicionarVeiculo(dadosVeiculo, uri);
     }
 
 
     @PutMapping("/{id}")
     @Transactional
+    @Operation(summary = "Atualiza completamentr um veículo", description = "Atualiza todos campos de um veiculo existente.")
     public ResponseEntity<Veiculo> atualizarVeiculoCompletamente(@RequestBody @Valid Veiculo veiculo) {
         return processor.atualizarVeiculoCompleto(veiculo);
+    }
+
+    @PatchMapping
+    @Transactional
+    @Operation(summary = "Atualiza parcialmente um veículo", description = "Atualiza os campos kilometragem, ativo, preco e moeda de um veiculo existente.")
+    public ResponseEntity<Veiculo> atualizarVeiculoParcialmente(@RequestBody @Valid Veiculo veiculo) {
+        return processor.atualizarVeiculoParcial(veiculo);
     }
 
 
     @DeleteMapping("/{id}")
     @Transactional
+    @Operation(summary = "Realiza soft delete de um veículo.", description = "Recebe id do veículo e altera o status do mesmo para false.")
     public ResponseEntity deletarVeiculo(@PathVariable Long id) {
         return processor.desativarVeiculo(id);
     }
