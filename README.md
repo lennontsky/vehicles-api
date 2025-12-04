@@ -11,9 +11,12 @@ A API será responsável por gerenciar veículos, permitindo operações de cons
 
 - Inclusão de veículo
 - Consulta de veículos
+- Conversão do preço para a cotação em tempo real do dolar
 - Atualização parcial ou completa de um veículo já cadastrado
-- Exclusão de veículo cadastrado
-- Controle de acesso baseado em papéis (admin, user)
+- Desativação de veículo cadastrado
+- TBD - Controle de acesso baseado em papéis (admin, user)
+
+  
 ---
 
 ## Rodando localmente
