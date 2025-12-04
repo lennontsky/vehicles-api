@@ -58,6 +58,14 @@ Swagger disponível em:
 ```http
   http://localhost:8080/swagger-ui/index.html
 ```
+---
+
+##Issues do projeto
+
+- Todos os todos do código e pontos de dúvida que surgiram durante o desenvolvimento foram documentados como issues no github pra serem revisados antes do commit final
+<img width="1730" height="719" alt="image" src="https://github.com/user-attachments/assets/fd789066-0c61-4fb3-ad93-b9abfa6664c8" />
+
+
 
 ---
 ## Stack utilizada
