@@ -1,11 +1,10 @@
 package br.com.cannamiranda.vehicles_api.veiculo.controller;
 
 
-import br.com.cannamiranda.vehicles_api.veiculo.processor.RelatorioMarcas;
+import br.com.cannamiranda.vehicles_api.veiculo.model.RelatorioMarcas;
 import br.com.cannamiranda.vehicles_api.veiculo.processor.VeiculoProcessor;
 import br.com.cannamiranda.vehicles_api.veiculo.model.Veiculo;
 import br.com.cannamiranda.vehicles_api.veiculo.model.DadosVeiculo;
-import br.com.cannamiranda.vehicles_api.veiculo.repository.VeiculoRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -70,7 +69,7 @@ public class VeiculosController {
     @GetMapping("/relatorios/por-marca")
     @Operation(summary = "Relatório de veículos por marca", description = "Gera um relatório informando o total de veiculos de cada marca.")
     public List<RelatorioMarcas> relatorioVeiculosPorMarca() {
-       return processor.obterRelatorioVeiculosPorMarca().getBody();
+       return processor.obterRelatorioVeiculosPorMarca();
     }
 
     @PostMapping

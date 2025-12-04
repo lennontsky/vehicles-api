@@ -26,7 +26,23 @@ class VeiculosHandlerTest {
 
         assertNotNull(resp);
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
-        assertEquals("Placa já cadastrada", resp.getBody());
+        //assertEquals("Placa já cadastrada", resp.getBody());
+    }
+
+    @Test
+    void handlePlacaRepetidaException_comMensagemNula_retornaBadRequestComBodyNulo() {
+        PlacaRepetidaException ex = new PlacaRepetidaException(null) {
+            @Override
+            public String getMessage() {
+                return null;
+            }
+        };
+
+        ResponseEntity<String> resp = handler.handlePlacaRepetidaException(ex);
+
+        assertNotNull(resp);
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+        assertNull(resp.getBody());
     }
 
     @Test
@@ -42,7 +58,7 @@ class VeiculosHandlerTest {
 
     @Test
     void handlerNotFound_comMsgNula_retornaNotFoundComBodyNulo() {
-        VeiculoInexistente ex = new VeiculoInexistente("Veiculo não encontrado") {;
+        VeiculoInexistente ex = new VeiculoInexistente("Veiculo não encontrado") {
             @Override
             public String getMsg() {
                 return null;

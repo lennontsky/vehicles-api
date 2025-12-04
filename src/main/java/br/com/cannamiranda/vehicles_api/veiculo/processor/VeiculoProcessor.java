@@ -3,6 +3,7 @@ package br.com.cannamiranda.vehicles_api.veiculo.processor;
 import br.com.cannamiranda.vehicles_api.exceptions.PlacaRepetidaException;
 import br.com.cannamiranda.vehicles_api.exceptions.VeiculoInexistente;
 import br.com.cannamiranda.vehicles_api.veiculo.model.DadosVeiculo;
+import br.com.cannamiranda.vehicles_api.veiculo.model.RelatorioMarcas;
 import br.com.cannamiranda.vehicles_api.veiculo.model.Veiculo;
 import br.com.cannamiranda.vehicles_api.veiculo.repository.VeiculoRepository;
 import br.com.cannamiranda.vehicles_api.veiculo.service.ConversorMoedaService;
@@ -108,15 +109,15 @@ public class VeiculoProcessor {
 
     }
 
-        public ResponseEntity<List<RelatorioMarcas>> obterRelatorioVeiculosPorMarca() {
+        public List<RelatorioMarcas> obterRelatorioVeiculosPorMarca() {
 
             List<RelatorioMarcas> relatorio = repository.relatorioDeVeiculosPorMarca();
 
             if (relatorio == null || relatorio.isEmpty()) {
-                return ResponseEntity.noContent().build();
+                return null;
             }
 
-            return ResponseEntity.ok(relatorio);
+            return relatorio;
 
         }
 
