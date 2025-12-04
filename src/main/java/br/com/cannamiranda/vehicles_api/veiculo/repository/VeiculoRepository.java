@@ -1,6 +1,7 @@
 package br.com.cannamiranda.vehicles_api.veiculo.repository;
 
 import br.com.cannamiranda.vehicles_api.veiculo.model.Veiculo;
+import br.com.cannamiranda.vehicles_api.veiculo.model.RelatorioMarcas;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,5 +16,10 @@ public interface VeiculoRepository extends JpaRepository<Veiculo, Long> {
     List<Veiculo> findAllByOrderByMarcaAsc();
 
     Page<List<Veiculo>> findByPrecoBetween(Double precoInicial, Double precoFinal, Pageable pageable);
+
+
+    @Query(value ="SELECT COALESCE(marca, 'SEM_MARCA') AS marca, COUNT(*) AS total FROM veiculos GROUP BY marca ORDER BY total DESC", nativeQuery = true)
+    List<RelatorioMarcas> relatorioDeVeiculosPorMarca();
+
 
 }

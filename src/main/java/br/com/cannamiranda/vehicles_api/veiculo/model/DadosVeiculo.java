@@ -3,6 +3,8 @@ package br.com.cannamiranda.vehicles_api.veiculo.model;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 public record DadosVeiculo(
 
         @NotBlank
@@ -29,7 +31,10 @@ public record DadosVeiculo(
         @NotNull
         Double preco,
 
-        @NotNull
-        Boolean ativo
+        Boolean ativo,
+
+        LocalDateTime ultimaAtualizacaoPreco,
+
+        String moeda
 
         ) { }
