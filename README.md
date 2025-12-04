@@ -64,7 +64,9 @@ Swagger disponível em:
 
 **Back-end:** Java 17, Spring Framework
 
-**Dependências:** Spring Boot, Spring Boot Dev Tools, Maven, Lombok
+**Dependências:** Maven, Lombok, Flyway
+
+**Banco de dados:** MySQL (requer servidor rodando para executar as migrations e criar o db)
 
 
 ---
