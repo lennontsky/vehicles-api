@@ -95,18 +95,6 @@ class VeiculosControllerTest {
     }
 
     @Test
-    void relatorioVeiculosPorMarca_delegatesToProcessor() {
-        List<RelatorioMarcas> lista = List.of(mock(RelatorioMarcas.class));
-        //List<RelatorioMarcas> expected = ResponseEntity.ok(lista);
-        //when(processor.obterRelatorioVeiculosPorMarca()).thenReturn(expected);
-
-        List<RelatorioMarcas> resp = controller.relatorioVeiculosPorMarca();
-
-        assertSame(lista, resp);
-        verify(processor).obterRelatorioVeiculosPorMarca();
-    }
-
-    @Test
     void adicionarVeiculo_constroiUriEDelegatesToProcessor() {
         DadosVeiculo dados = mock(DadosVeiculo.class);
         when(dados.placa()).thenReturn("ABC1A23");

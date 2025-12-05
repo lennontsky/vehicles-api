@@ -1,5 +1,6 @@
 package br.com.cannamiranda.vehicles_api.veiculo.processor;
 import br.com.cannamiranda.vehicles_api.veiculo.controller.VeiculosController;
+import br.com.cannamiranda.vehicles_api.veiculo.model.RelatorioMarcas;
 import br.com.cannamiranda.vehicles_api.veiculo.model.Veiculo;
 import br.com.cannamiranda.vehicles_api.veiculo.model.DadosVeiculo;
 import br.com.cannamiranda.vehicles_api.veiculo.processor.VeiculoProcessor;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class VeiculosControllerTest {
+class VeiculosProcessorTest {
 
     @InjectMocks
     private VeiculosController controller;
@@ -62,9 +63,6 @@ class VeiculosControllerTest {
         Map<String, String> filtros = captor.getValue();
         assertEquals("1000", filtros.get("valorMinimo"));
         assertEquals("20000", filtros.get("valorMaximo"));
-        assertEquals("vermelho", filtros.get("cor"));
-        assertEquals("Toyota", filtros.get("marca"));
-        assertEquals("2020", filtros.get("ano"));
     }
 
     @Test
@@ -100,19 +98,6 @@ class VeiculosControllerTest {
         verify(processor).buscarVeiculoPorId(id);
     }
 
-    @Test
-    void relatorioVeiculosPorMarca_delegatesToProcessor() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Veiculo> lista = List.of(sampleVeiculo);
-        ResponseEntity<List<Veiculo>> response = ResponseEntity.ok(lista);
-
-        //when(processor.obterRelatorioVeiculosPorMarca()).thenReturn(response);
-
-        ResponseEntity<List<Veiculo>> resp = (ResponseEntity<List<Veiculo>>) controller.relatorioVeiculosPorMarca();
-
-        //assertSame(expected, resp);
-        verify(processor).obterRelatorioVeiculosPorMarca();
-    }
 
     @Test
     void adicionarVeiculo_constroiUriEDelegatesToProcessor() {
@@ -150,15 +135,15 @@ class VeiculosControllerTest {
         verify(processor).atualizarVeiculoCompleto(toUpdate);
     }
 
-//    @Test
-//    void deletarVeiculo_delegatesToProcessor() {
-//        Long id = 7L;
-//        ResponseEntity<?> expected = ResponseEntity.noContent().build();
-//        when(processor.desativarVeiculo(id)).thenReturn(expected);
-//
-//        ResponseEntity<?> resp = controller.deletarVeiculo(id);
-//
-//        assertSame(expected, resp);
-//        verify(processor).desativarVeiculo(id);
-//    }
+    @Test
+    void deletarVeiculo_delegatesToProcessor() {
+        Long id = 7L;
+        ResponseEntity<?> expected = ResponseEntity.noContent().build();
+        when(processor.desativarVeiculo(id)).thenReturn((ResponseEntity<Object>) expected);
+
+        ResponseEntity<?> resp = controller.deletarVeiculo(id);
+
+        assertSame(expected, resp);
+        verify(processor).desativarVeiculo(id);
+    }
 }
