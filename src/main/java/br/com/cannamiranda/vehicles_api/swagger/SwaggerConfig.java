@@ -1,4 +1,4 @@
-package br.com.cannamiranda.vehicles_api.swagger_dark;
+package br.com.cannamiranda.vehicles_api.swagger;
 
 import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springdoc.core.properties.SwaggerUiOAuthProperties;

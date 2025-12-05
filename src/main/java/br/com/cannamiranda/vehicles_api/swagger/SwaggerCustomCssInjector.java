@@ -1,4 +1,4 @@
-package br.com.cannamiranda.vehicles_api.swagger_dark;
+package br.com.cannamiranda.vehicles_api.swagger;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springdoc.core.properties.SwaggerUiConfigProperties;
