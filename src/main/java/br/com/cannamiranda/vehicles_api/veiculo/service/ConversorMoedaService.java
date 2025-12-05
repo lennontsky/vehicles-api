@@ -26,7 +26,7 @@ public class ConversorMoedaService {
 
     RestTemplate restTemplate = new RestTemplate();
 
-    public Double converterRealParaDolar() {
+    public Double obtemCotacaoDoDolar() {
 
         try {
             return obterCotacaoDaAwsomeApi();

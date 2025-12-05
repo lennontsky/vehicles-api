@@ -32,7 +32,7 @@ class ConversorMoedaServiceTest {
     }
 
     @Test
-    void converterRealParaDolar_deveRetornarBidDaAwsomeApi_quando2xxEComBid() {
+    void obtemCotacaoDoDolar_deveRetornarBidDaAwsomeApi_quando2XxEComBid() {
         service.setApiUrl("http://awsome");
         service.setAccessKey("KEY");
 
@@ -43,7 +43,7 @@ class ConversorMoedaServiceTest {
         when(restTemplate.getForEntity(expectedUrl, CambioResponse.class))
                 .thenReturn(ResponseEntity.ok(cambio));
 
-        Double resultado = service.converterRealParaDolar();
+        Double resultado = service.obtemCotacaoDoDolar();
 
         assertNotNull(resultado);
         assertEquals(0.5, resultado);
@@ -51,7 +51,7 @@ class ConversorMoedaServiceTest {
     }
 
     @Test
-    void converterRealParaDolar_deveUsarFallback_quandoAwsomeRetornaBidNulo() {
+    void obtemCotacaoDoDolar_deveUsarFallback_quandoAwsomeRetornaBidNulo() {
         service.setApiUrl("http://awsome2");
         service.setAccessKey("KEY2");
         service.setFallbackApiUrl("http://fallback.test/latest");
@@ -68,7 +68,7 @@ class ConversorMoedaServiceTest {
         when(restTemplate.getForEntity("http://fallback.test/latest", FallbackResponse.class))
                 .thenReturn(ResponseEntity.ok(fallbackResp));
 
-        Double resultado = service.converterRealParaDolar();
+        Double resultado = service.obtemCotacaoDoDolar();
 
         assertEquals(0.23, resultado);
         verify(restTemplate).getForEntity(awsomeUrl, CambioResponse.class);
@@ -76,7 +76,7 @@ class ConversorMoedaServiceTest {
     }
 
     @Test
-    void converterRealParaDolar_deveUsarFallback_quandoAwsomeLancaExcecao() {
+    void obtemCotacaoDoDolar_deveUsarFallback_quandoAwsomeLancaExcecao() {
         service.setApiUrl("http://awsome3");
         service.setAccessKey("KEY3");
         service.setFallbackApiUrl("http://fallback2.test/latest");
@@ -90,7 +90,7 @@ class ConversorMoedaServiceTest {
         when(restTemplate.getForEntity("http://fallback2.test/latest", FallbackResponse.class))
                 .thenReturn(ResponseEntity.ok(fallbackResp));
 
-        Double resultado = service.converterRealParaDolar();
+        Double resultado = service.obtemCotacaoDoDolar();
 
         assertEquals(0.42, resultado);
         verify(restTemplate).getForEntity(awsomeUrl, CambioResponse.class);
@@ -114,7 +114,7 @@ class ConversorMoedaServiceTest {
         when(restTemplate.getForEntity(defaultFallback, FallbackResponse.class))
                 .thenReturn(ResponseEntity.ok(fallbackResp));
 
-        Double resultado = service.converterRealParaDolar();
+        Double resultado = service.obtemCotacaoDoDolar();
 
         assertEquals(0.77, resultado);
         // confirmou que a URL padrão foi atribuída ao campo

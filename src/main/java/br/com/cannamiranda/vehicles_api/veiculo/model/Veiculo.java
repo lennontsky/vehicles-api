@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Table(name = "veiculos")
 @Entity(name = "Veiculo")
@@ -51,7 +50,8 @@ public class Veiculo {
         //TODO: Issue #8 Refactor - A lógica abaixo seria interessanter de mover pra outro lugar, talvez um service...
         if (precisaAtualizarCotacaoDoPreco()) {
             ConversorMoedaService service = new ConversorMoedaService();
-            this.preco = service.converterRealParaDolar();
+            double cotacao = service.obtemCotacaoDoDolar();
+            this.preco = dadosVeiculo.preco() * cotacao;
             this.moeda = "USD";
         } else {
             this.preco = dadosVeiculo.preco();
@@ -61,7 +61,17 @@ public class Veiculo {
     }
 
 
-    private boolean precisaAtualizarCotacaoDoPreco() {
+    private Double obtemCotacaoDolar() {
+
+        ConversorMoedaService service = new ConversorMoedaService();
+        this.moeda = "USD";
+        return service.obtemCotacaoDoDolar();
+
+
+    }
+
+
+    public boolean precisaAtualizarCotacaoDoPreco() {
 
         if (this.moeda == null) {
             return true;
@@ -74,37 +84,60 @@ public class Veiculo {
 
             default:
                 return true;
-
         }
     }
 
 
-    public Veiculo atualizarInformacoes(Veiculo veiculoDB) {
+    public Veiculo atualizarInformacoesParciais(Veiculo dadosParciais, Veiculo veiculoDb) {
 
-        if(!this.equals(veiculoDB)) {
-            if (veiculoDB.kilometragem != this.kilometragem) {
-                System.out.println("LOG: Atualizando kilometragem de " + this.kilometragem + " para " + veiculoDB.kilometragem);
-                this.kilometragem = veiculoDB.kilometragem;
-            }
-            if (!veiculoDB.preco.equals(this.preco)) {
-                System.out.println("LOG: Atualizando preço de " + this.preco + " para " + veiculoDB.preco);
-                this.preco = veiculoDB.preco;
-            }
-            if (!veiculoDB.getAtivo()) {
-                System.out.println("LOG: Atualizando status de ativo de " + this.ativo + " para " + veiculoDB.getAtivo());
-                this.ativo = veiculoDB.getAtivo();
-            }
+        Veiculo veiculoAtualizado = new Veiculo();
+        ConversorMoedaService service = new ConversorMoedaService();
 
-            return this;
+        //atualiza preco e cotacao se necessario
+        if(dadosParciais.precisaAtualizarCotacaoDoPreco()){
+            double vlrDolar = service.obtemCotacaoDoDolar();
+            System.out.println("LOG: Atualizando preço do veículo com base na cotação do dólar: " + vlrDolar);
+
+            veiculoAtualizado.setPreco(dadosParciais.getPreco() * vlrDolar);
+            veiculoAtualizado.setMoeda("USD");
+            veiculoAtualizado.setUltimaAtualizacao(LocalDateTime.now());
+            System.out.println("LOG: Preço atualizado para: " + veiculoAtualizado.getPreco() + " " + veiculoAtualizado.getMoeda());
+
+        } else {
+            System.out.println("LOG: Atualizando preço do veículo sem conversão de moeda.");
+            veiculoAtualizado.setPreco(dadosParciais.getPreco());
+            veiculoAtualizado.setMoeda(dadosParciais.getMoeda());
         }
-        else{
-            return null;
+
+
+        if (dadosParciais.kilometragem != veiculoDb.kilometragem) {
+            veiculoAtualizado.setKilometragem(
+                    dadosParciais.kilometragem
+            );
+            System.out.println("LOG: Atualizando kilometragem por parametro recebido.");
         }
 
-    }
+        if (dadosParciais.getAtivo()) {
+                System.out.println("LOG: Atualizando status para parametro recebido.");
+                veiculoAtualizado.setAtivo(true);
+        }
+        else {
+                System.out.println("LOG: Atualizando status para parametro recebido.");
+                veiculoAtualizado.setAtivo(false);
+        }
 
-        public void setAtivo(boolean b) {
-        this.ativo = b;
+        //campos que nao podem ser alterados
+        veiculoAtualizado.setId(veiculoDb.getId());
+        veiculoAtualizado.setPlaca(veiculoDb.getPlaca());
+        veiculoAtualizado.setChassi(veiculoDb.getChassi());
+        veiculoAtualizado.setModelo(veiculoDb.getModelo());
+        veiculoAtualizado.setMarca(veiculoDb.getMarca());
+        veiculoAtualizado.setAno(veiculoDb.getAno());
+        veiculoAtualizado.setTipo(veiculoDb.getTipo());
+
+        System.out.println("LOG: Veículo atualizado: " + veiculoAtualizado.toString());
+        return veiculoAtualizado;
+
     }
 
 
