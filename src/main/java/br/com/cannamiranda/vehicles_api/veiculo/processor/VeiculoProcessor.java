@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,12 +65,27 @@ public class VeiculoProcessor {
 
     public ResponseEntity<Veiculo> atualizarVeiculoCompleto(@Valid Veiculo veiculo) {
 
-        var veiculoOptional = repository.findById(veiculo.getId());
-        if (veiculoOptional.isPresent()) {
+        Veiculo veiculoDB = buscarVeiculoNoBanco(veiculo.getId());
+
+        if (veiculoDB == null) {
+            System.out.println("LOG: Veículo nao encontrado no banco de dados: " + veiculo.getId());
+            return ResponseEntity.notFound().build();
+        }
+        else {
+            if (veiculo.precisaAtualizarCotacaoDoPreco()){
+                Double valorEmDolar = conversorMoedaService.obtemCotacaoDoDolar() * veiculo.getPreco();
+                veiculo.setPreco(valorEmDolar);
+                veiculo.setMoeda("USD");
+                veiculo.setUltimaAtualizacao(LocalDateTime.now());
+            }
+
+            System.out.println("LOG: Atualizando veículo ID " + veiculo.getId() + " no banco de dados.");
+            System.out.println(veiculo);
             repository.save(veiculo);
+
             return ResponseEntity.ok(veiculo);
         }
-        return ResponseEntity.notFound().build();
+
     }
 
     public ResponseEntity<Veiculo> adicionarVeiculo(@Valid DadosVeiculo dadosVeiculo, URI uri) {
@@ -81,7 +98,7 @@ public class VeiculoProcessor {
             else {
                 var novoVeiculo = new Veiculo(dadosVeiculo);
 
-                Double valorEmDolar = conversorMoedaService.converterRealParaDolar() * dadosVeiculo.preco();
+                Double valorEmDolar = conversorMoedaService.obtemCotacaoDoDolar() * dadosVeiculo.preco();
                 novoVeiculo.setPreco(valorEmDolar);
 
                 repository.save(novoVeiculo);
@@ -121,18 +138,30 @@ public class VeiculoProcessor {
 
         }
 
-    public ResponseEntity<Veiculo> atualizarVeiculoParcial(@Valid Veiculo veiculo) {
+    public ResponseEntity<Veiculo> atualizarVeiculoParcial(@Valid Veiculo dadosParciais) {
 
-            var veiculoDB = repository.findById(veiculo.getId());
-            if (veiculoDB.isPresent()) {
-                Veiculo veiculoAtualizado = veiculo.atualizarInformacoes(veiculoDB.get());
-                if (veiculoAtualizado != null) {
-                    repository.save(veiculoAtualizado);
-                    return ResponseEntity.ok(veiculoAtualizado);
-                }
-            }
+        Veiculo veiculoDB = buscarVeiculoNoBanco(dadosParciais.getId());
 
-            return ResponseEntity.notFound().build();
+        //2. comparar dados recebidos com dados do db
+        //3. atualizar apenas os campos permitidos (kilometragem, ativo, preco e moeda)
+        Veiculo veiculoAtualizado = veiculoDB.atualizarInformacoesParciais(dadosParciais, veiculoDB);
+
+        //4. salvar veiculo atualizado no db
+        repository.save(veiculoAtualizado);
+        return ResponseEntity.ok(veiculoAtualizado);
+
     }
+
+    private Veiculo buscarVeiculoNoBanco(Long id) {
+        Optional<Veiculo> veiculoOptional = repository.findById(id);
+        if (veiculoOptional.isPresent()) {
+            return veiculoOptional.get();
+        } else {
+            String msg = "Veículo com ID " + id + " não encontrado.";
+            System.out.println("LOG: " + msg);
+            throw new VeiculoInexistente(msg);
+        }
+    }
+
 
 }
